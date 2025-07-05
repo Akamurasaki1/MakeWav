@@ -10,3 +10,15 @@ def avoid_overwrite(filename):
         new_filename = f"{base}-{counter}{ext}"
         counter += 1
     return new_filename
+
+# np.array(...) 形式で出力（小数対応）
+def format_np_array(array, float_fmt=".3f"):
+    # Check if the array is 1D and wrap it in a list if necessary
+    if array.ndim == 1:
+        array = [array]
+
+    rows = []
+    for row in array:
+        row_str = ', '.join(f"{x:{float_fmt}}" if isinstance(x, float) else str(x) for x in row)
+        rows.append(f"    [{row_str}]")
+    return "np.array([\n" + ',\n'.join(rows) + "\n])"
