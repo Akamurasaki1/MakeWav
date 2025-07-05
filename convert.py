@@ -1,9 +1,10 @@
+# coding: utf-8
 import numpy as np
 from jisyo import Token_Name_table, Token_Frequency_table, Token_MIDI_table
 
 ###################################  1つのID(104など)を音階名('C3'など)やMIDI番号(45など)に変換する関数  ######################################
 
-# ID -> 音階名
+# ID -> 音階pi名
 def Name_fromID(token_id, default):
     return Token_Name_table.get(token_id, default)
 
@@ -19,22 +20,17 @@ def MIDInum_fromID(token_id, default):
 
 ############## ID列([104,102,503,...]など)を音階名列(['C3','D2','A5',....]など)やMIDI番号列([45,52,30,....]など)に変換する関数  #################
 
-# ID列 -> (音階名列/周波数列/MIDI番号列）
-def NameArray_fromTokens(token_list, default=0.0):
-    if isinstance(token_list, np.ndarray) and token_list.ndim == 2:  # 2D numpy array
-        return np.array([
-            [c_attr(token, table, default) for token in row]
-            for row in token_list.tolist() # Convert row to list for iteration
-        ])
-    elif isinstance(token_list, list) and all(isinstance(i, list) for i in token_list): # 2D list
-         return np.array([
-            [c_attr(token, table, default) for token in row]
-            for row in token_list
-        ])
-    elif isinstance(token_list, (list, np.ndarray)):  # 1D list or numpy array
-        return np.array([c_attr(token, table, default) for token in token_list])
-    else:
-        return np.array([]) # Return empty array for unhandled types
+# ID列 -> 音階名列
+def Names_fromIDs(token_ids, default='UNK'):
+    return [Name_fromID(tid, default) for tid in token_ids]
+
+# ID列 -> 周波数列
+def Freqs_fromIDs(token_ids, default=0.0):
+    return [Freq_fromID(tid, default) for tid in token_ids]
+
+# ID列 -> MIDI番号列
+def MIDInums_fromIDs(token_ids, default=-1):
+    return [MIDInum_fromID(tid, default) for tid in token_ids]
 
 
 # np.array(...) 形式で出力（小数対応）
@@ -49,18 +45,9 @@ def format_np_array(array, float_fmt=".3f"):
         rows.append(f"    [{row_str}]")
     return "np.array([\n" + ',\n'.join(rows) + "\n])"
 
-print("使用感のチェック")
-token1=[[103,205,700,411],[0,801,302,111]]
-# 音名列
-print("Note names:")
-print(c_attr_array(token1, Token_Name_table, default=""))
+print(Names_fromIDs([104, 102, 503, 911])) 
+print(Freqs_fromIDs([104, 102, 503, 911]))
+print(MIDInums_fromIDs([104, 102, 503, 911]))
 
-# 周波数列（数値＋整形）
-freqs = c_attr_array(token1, Token_Frequency_table)
-print("Frequencies:")
-print(format_np_array(freqs))  # f = np.array([...]) 形式
 
-# MIDI列（整数＋整形）
-midi = c_attr_array(token1, Token_MIDI_table, default=0)
-print("MIDI:")
-print(format_np_array(midi, float_fmt="d"))  # 小数ではなく整数表示
+      
