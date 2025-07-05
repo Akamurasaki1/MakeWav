@@ -15,3 +15,7 @@ def get_freqs_from_audio(audio_path, sr=44100, hop_length=512):
         freqs.append(freq if freq > 0 else 0.0)
 
     return np.array(freqs)
+# Example usage:
+# audio_path = "path/to/your/audio.wav"
+mopemope_preview_freqs = get_freqs_from_audio("/Users/karen/forBMS/LeaF/[clover]LeaF_mopemope/_preview.wav",sr=44100, hop_length=512)
+print(mopemope_preview_freqs)
